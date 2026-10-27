@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${report.reportType}"></title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+        .summary {
+            margin-bottom: 30px;
+        }
+        .summary-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .summary-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            text-align: center;
+        }
+        .summary-value {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .summary-label {
+            font-size: 14px;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <div class="title" th:text="${report.reportType}"></div>
+    <div class="subtitle">Period: <span th:text="${report.startDate + ' to ' + report.endDate}"></span></div>
+    <div class="subtitle">Generated: <span th:text="${#temporals.format(report.generatedDate, 'yyyy-MM-dd HH:mm')}"></span></div>
+</div>
+
+<div class="summary">
+    <div class="summary-title">Summary</div>
+    <div class="summary-grid">
+        <!-- Sales Report Summary -->
+        <div th:if="${report.reportType == 'Sales Report'}">
+            <div class="summary-card">
+                <div class="summary-value" th:text="'$' + (${report.summary.totalSales} ?: 0)"></div>
+                <div class="summary-label">Total Sales</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="${report.summary.totalOrders} ?: 0"></div>
+                <div class="summary-label">Total Orders</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="'$' + (${report.summary.avgOrderValue} ?: 0)"></div>
+                <div class="summary-label">Avg Order Value</div>
+            </div>
+        </div>
+
+        <!-- Customer Report Summary -->
+        <div th:if="${report.reportType == 'Customer Report'}">
+            <div class="summary-card">
+                <div class="summary-value" th:text="${report.summary.totalCustomers} ?: 0"></div>
+                <div class="summary-label">Total Customers</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="${report.summary.newCustomers} ?: 0"></div>
+                <div class="summary-label">New Customers</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="'$' + (${report.summary.avgCustomerSpent} ?: 0)"></div>
+                <div class="summary-label">Avg Customer Spent</div>
+            </div>
+        </div>
+
+        <!-- Order Report Summary -->
+        <div th:if="${report.reportType == 'Order Report'}">
+            <div class="summary-card">
+                <div class="summary-value" th:text="${report.summary.totalOrders} ?: 0"></div>
+                <div class="summary-label">Total Orders</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="${report.summary.completedOrders} ?: 0"></div>
+                <div class="summary-label">Completed Orders</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="${report.summary.pendingOrders} ?: 0"></div>
+                <div class="summary-label">Pending Orders</div>
+            </div>
+        </div>
+
+        <!-- Payment Report Summary -->
+        <div th:if="${report.reportType == 'Payment Report'}">
+            <div class="summary-card">
+                <div class="summary-value" th:text="'$' + (${report.summary.totalRevenue} ?: 0)"></div>
+                <div class="summary-label">Total Revenue</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="${report.summary.totalPayments} ?: 0"></div>
+                <div class="summary-label">Total Payments</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" th:text="'$' + (${report.summary.avgPaymentAmount} ?: 0)"></div>
+                <div class="summary-label">Avg Payment Amount</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="summary-title" th:text="|${report.reportType} Details|"></div>
+    <table>
+        <thead>
+        <!-- Sales Report Headers -->
+        <tr th:if="${report.reportType == 'Sales Report'}">
+            <th>Category</th>
+            <th>Sales Amount</th>
+            <th>Number of Orders</th>
+        </tr>
+
+        <!-- Customer Report Headers -->
+        <tr th:if="${report.reportType == 'Customer Report'}">
+            <th>Customer ID</th>
+            <th>Total Spent</th>
+            <th>Order Count</th>
+        </tr>
+
+        <!-- Order Report Headers -->
+        <tr th:if="${report.reportType == 'Order Report'}">
+            <th>Status</th>
+            <th>Count</th>
+            <th>Average Amount</th>
+        </tr>
+
+        <!-- Payment Report Headers -->
+        <tr th:if="${report.reportType == 'Payment Report'}">
+            <th>Payment Method</th>
+            <th>Count</th>
+            <th>Total Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Sales Report Rows -->
+        <tr th:each="detail : ${report.details}" th:if="${report.reportType == 'Sales Report'}">
+            <td th:text="${detail.categoryName}"></td>
+            <td th:text="'$' + ${detail.categorySales}"></td>
+            <td th:text="${detail.categoryOrders}"></td>
+        </tr>
+
+        <!-- Customer Report Rows -->
+        <tr th:each="detail : ${report.details}" th:if="${report.reportType == 'Customer Report'}">
+            <td th:text="${detail.customerId}"></td>
+            <td th:text="'$' + ${detail.totalSpent}"></td>
+            <td th:text="${detail.orderCount}"></td>
+        </tr>
+
+        <!-- Order Report Rows -->
+        <tr th:each="detail : ${report.details}" th:if="${report.reportType == 'Order Report'}">
+            <td th:text="${detail.status}"></td>
+            <td th:text="${detail.count}"></td>
+            <td th:text="'$' + ${detail.avgAmount}"></td>
+        </tr>
+
+        <!-- Payment Report Rows -->
+        <tr th:each="detail : ${report.details}" th:if="${report.reportType == 'Payment Report'}">
+            <td th:text="${detail.paymentMethod}"></td>
+            <td th:text="${detail.count}"></td>
+            <td th:text="'$' + ${detail.totalAmount}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
